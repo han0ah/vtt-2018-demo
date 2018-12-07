@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>VTT KAIST SWRC</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body onload="onWebPageLoad()">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">VTT Friends Knowledge Graph - SWRC</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
+<div class="container-fluid">
+<div class="row">
+    <div class="col-md-2">
+        <div class="colum-sub-title">
+            Select Episode
+        </div>
+        <div class="list-group" id="episode-list-group">
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="colum-sub-title">
+            Select Dialog
+        </div>
+        <div class="list-group" id="dialog-list-group">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="colum-sub-title">
+            Result
+        </div>
+        <div style="margin-bottom:1rem">
+            <button type="button" class="btn btn-success btn-lg" onclick="parseDialog()">Parse</button>
+        </div>
+        <div class="parsed-text">
+        </div>
+        <hr/>
+        <div class="entity-triples">
+        </div>
+    </div>
+</div>
+</div>
+<div class="progress-area">
+    <div class="progress-text">
+        <div class="loader-custom"></div>
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/vtt.js"></script>
+</body>
+</html>
