@@ -71,11 +71,28 @@ def get_episode_list():
 
     return json.dumps(result_obj)
 
+@post ('/get_result', method=['OPTIONS','POST'])
+@enable_cors
+def get_reulst():
+    request_str = request.body.read()
+    try:
+        request_str = request_str.decode('utf-8')
+        input_obj = json.loads(request_str)
+    except:
+        return '{"error":"Failed to decode request text"}'
+
+    scene_id = str(input_obj['scene_id'])
+    fid = 's01e0' + scene_id[0] + '-0' + scene_id[1] + '.json'
+
+    f = open('demo-data/' + fid, 'r', encoding='utf-8')
+    data = f.read()
+    f.close()
+
+    return data
+
 
 DBManager.initialize(host='kbox.kaist.ac.kr', port=3142, user='root', password='swrcswrc',
                            db='KoreanWordNet2', charset='utf8', autocommit=True)
 
 print ('Initialized')
 run(host=config.host_uri, port=config.port)
-
-

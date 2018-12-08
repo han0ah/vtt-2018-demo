@@ -2,8 +2,27 @@
  * Created by kijong on 2018-04-12.
  */
 
-var curr_dialog_id = -1;
+var curr_scene_id = "";
 var curr_speaker = "";
+var character_color = {
+    "Monica": "#6610f2",
+    "Ross": "#e83e8c",
+    "Joey": "#fd7e14",
+    "Chandler": "#289745",
+    "Rachel": "#007bff",
+    "Phoebe": "#17a2b8",
+    "Carol": "#ffc107",
+    "Paul" : "#dc3545"
+};
+
+var character_link = {
+    "Monica": "http://dbpedia.org/page/Monica_Geller",
+    "Ross": "http://dbpedia.org/page/Ross_Geller",
+    "Joey": "http://dbpedia.org/page/Joey_Tribbiani",
+    "Chandler": "http://dbpedia.org/page/Chandler_Bing",
+    "Rachel": "http://dbpedia.org/page/Rachel_Green",
+    "Phoebe": "http://dbpedia.org/page/Phoebe_Buffay"
+}
 
 
 function onWebPageLoad() {
@@ -39,81 +58,51 @@ function setSceneItemClicked(sceneId) {
             $(this).addClass('active')
         }
     })
-}
 
-function setEpisodeItemClicked(episodeId) {
-    var _episodeId = episodeId
-    curr_dialog_id = -1
-    curr_speaker = ""
-
-    $('#episode-list-group').children().each(function(){
-        curr_id = Number(this.id.substring(19))
-        $(this).removeClass('active')
-
-        if (curr_id == _episodeId){
-            $(this).addClass('active')
-        }
-    })
+    ssceneId = sceneId.toString()
+    curr_scene_id = "s01e0" + ssceneId.substring(0) + "-" + ssceneId.substring(1)
     $('.progress-area').show()
-    getDialogListOfEpisode(episodeId)
+    getSceneKnowledge(sceneId)
 }
 
-function getDialogListOfEpisode(episodeId) {
-    episodeIdFormal = "S1E" + episodeId.toString()
-    jsonInput = '{"episode_id":"' + episodeIdFormal + '"}'
-    $.post('http://localhost:5003/dialog_list', jsonInput, function(data) {
-        updateDialogList(JSON.parse(data))
-    });
-}
-
-function updateDialogList(data) {
-    $('#dialog-list-group').empty()
-    for (i=0;i<data.length;i++) {
-        dialog_id = data[i]['FND_Dialog_ID']
-        dialog_character = data[i]['Character_']
-        dialog_str = data[i]['Dialog']
-
-        if (dialog_character == "Stage direction")
-            continue;
-
-        item = $('<button>')
-        item.attr('onclick','setDialogItemClicked(' + dialog_id.toString() + ',"' + dialog_character + '")')
-        item.attr('type', 'button')
-        item.attr('class', 'list-group-item list-group-item-action')
-        item.attr('id', 'dialog-group-item-' + data[i]['FND_Dialog_ID'].toString())
-
-        item.text(dialog_character + ' : ' + dialog_str)
-        $('#dialog-list-group').append(item)
-    }
-    $('.progress-area').hide()
-}
-
-function setDialogItemClicked(dialogId, speaker) {
-    var _dialogId = dialogId
-    $('#dialog-list-group').children().each(function(){
-        curr_id = Number(this.id.substring(18))
-        $(this).removeClass('active')
-
-        if (curr_id == _dialogId){
-            $(this).addClass('active')
-        }
-    })
-    curr_dialog_id = dialogId
-    curr_speaker = speaker
-}
-
-function parseDialog() {
-    if (curr_dialog_id == -1)
-        return;
-
-    $('.progress-area').show()
-
-    jsonInput = '{"dialog_id":' + curr_dialog_id + ',"speaker":"'  + curr_speaker + '"}'
-    $.post('http://localhost:5003/parse_result', jsonInput, function(data) {
-        writeParseResult(JSON.parse(data))
+function getSceneKnowledge(sceneId) {
+    jsonInput = '{"scene_id":' + sceneId.toString() + '}'
+    $.post('http://localhost:5003/get_result', jsonInput, function(data) {
+        updateKnowledgeList(JSON.parse(data))
         $('.progress-area').hide()
     });
 }
+
+function updateKnowledgeList(data) {
+    data = data['knowledges']
+
+    $('#vtt-tbody').empty()
+
+    speaker_list = ["Ross", "Rachel", "Joey", "Monica", "Chandler", "Phoebe"]
+
+    table_text = ""
+
+    for(var speakerid=0; speakerid<6; speakerid++){
+        curr_speaker = speaker_list[speakerid];
+        for(var i=0; i<data.length; i++) {
+            item = data[i]
+            speaker = item['speaker']
+            if (speaker != curr_speaker) {
+                continue
+            }
+            sentid = curr_scene_id + '-' + item['sid']
+            table_text += '<tr>'
+            table_text += '<th class="custom-th">' + speaker + '</th>'
+            table_text += '<th class="custom-th">' + sentid + '</th>'
+            table_text += '<th class="custom-th">' + "tt" + '</th>'
+            table_text += '<th class="custom-th">' + "tt" + '</th>'
+            table_text += '</tr>'
+        }
+    }
+
+    $('#vtt-tbody').append(table_text)
+}
+
 
 function writeParseResult(data) {
     $('.parsed-text').empty()
