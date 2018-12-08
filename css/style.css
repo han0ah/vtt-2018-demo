@@ -6,6 +6,16 @@ body {
   text-align: center;
 }
 
+.vtt-toggle {
+  color: #212529;
+  background: #e0e0e0;
+  padding: 2px;
+}
+
+#episode-list-group {
+  font-size: 1.2rem;
+}
+
 button:focus {
   outline: none;
 }
@@ -20,7 +30,7 @@ button:focus {
 
 .colum-sub-title {
   margin-bottom: 1rem;
-  font-size:1.3em;
+  font-size:1.5em;
   font-weight: bold;
   color: #343a40;
 }

@@ -5,17 +5,40 @@
 var curr_dialog_id = -1;
 var curr_speaker = "";
 
+
 function onWebPageLoad() {
-    for (i=1;i<=23;i++) {
+
+    var scene_list = [[1,0],[1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],
+    [2,0],[2,1],[2,2],[2,3],[2,4],[2,5],[2,6],
+    [3,0],[3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],
+    [4,0],[4,1],[4,2],[4,3],[4,4],[4,5],[4,6],
+    [5,0],[5,1],[5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8]]
+
+    for (i=0; i<42; i++) {
+        epiid = scene_list[i][0]
+        sceneid = scene_list[i][1]
+
         item = $('<button>')
-        item.attr('onclick','setEpisodeItemClicked(' + i.toString() + ')')
+        item.attr('onclick','setSceneItemClicked(' + epiid.toString() + sceneid.toString() + ')')
         item.attr('type', 'button')
         item.attr('class', 'list-group-item list-group-item-action')
-        item.attr('id', 'episode-group-item-' + i.toString())
-        item.text('Season1 Episode' + i.toString())
+        item.attr('id', 'episode-group-item-' + epiid.toString() + sceneid.toString())
+        item.text('Season1 Episode' + epiid.toString() + ' Scene' + (sceneid+1).toString())
         $('#episode-list-group').append(item)
     }
     $('.progress-area').hide()
+}
+
+function setSceneItemClicked(sceneId) {
+    var _sceneId = sceneId
+    $('#episode-list-group').children().each(function(){
+        curr_id = Number(this.id.substring(19,21))
+        $(this).removeClass('active')
+
+        if (curr_id == _sceneId){
+            $(this).addClass('active')
+        }
+    })
 }
 
 function setEpisodeItemClicked(episodeId) {
