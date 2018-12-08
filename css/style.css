@@ -66,6 +66,10 @@ button:focus {
   font-weight:normal;
 }
 
+.vtt-btn {
+  padding: 0.1rem 0.1rem;
+}
+
 .see-more-text {
   margin-top: -0.4rem;
   margin-bottom: 0.4rem;

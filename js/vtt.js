@@ -67,10 +67,59 @@ function setSceneItemClicked(sceneId) {
 
 function getSceneKnowledge(sceneId) {
     jsonInput = '{"scene_id":' + sceneId.toString() + '}'
-    $.post('http://localhost:5003/get_result', jsonInput, function(data) {
+    $.post('http://143.248.135.139:5003/get_result', jsonInput, function(data) {
         updateKnowledgeList(JSON.parse(data))
         $('.progress-area').hide()
     });
+}
+
+function getTripleHTML(triple, ext_links, tripleid) {
+    sbj = triple['sbj']
+    obj = triple['obj']
+
+    ori_sbj = sbj
+    ori_obj = obj
+
+    if (sbj in character_link) {
+        sbj = '<a target="_blank" href="' + character_link[sbj] + '">' + sbj + "</a>"
+    }
+    if (obj in character_link) {
+        obj = '<a target="_blank" href="' + character_link[obj] + '">' + obj + "</a>"
+    }
+
+    if (ori_sbj in character_color) {
+        sbj = '<font weight="bold" color="' + character_color[ori_sbj] + '">' + sbj + "</font>"
+    }
+
+    if (ori_obj in character_color) {
+        obj = '<font weight="bold" color="' + character_color[ori_obj] + '">' + obj + "</font>"
+    }
+
+    triple_text = "＜" + sbj + " - " + triple['rel'] + " - " + obj + "＞";
+
+    triple_text += '<a class="vtt-btn btn btn-info" data-toggle="collapse" href="#collapseTriple'
+    triple_text += tripleid
+    triple_text += '" role="button" aria-expanded="false" aria-controls="collapseExample">'
+    triple_text += 'More </a>'
+
+    triple_text += '<div class="collapse" id="collapseTriple'
+    triple_text += tripleid
+    triple_text += '">'
+    triple_text += '<br/><div class="card card-body" style="font-size:1.2rem">'
+
+    frames = ext_links['frame']
+    
+    if (frames.length > 1) {
+        word = frames[0]
+
+        for (var ii=1; ii<frames.length; ii++) {
+            triple_text +=  "＜" + word + " - " + "frame" + " - " + frames[ii] + "＞" + '</br>';
+        }
+    }
+
+    triple_text += '</div>'
+
+    return triple_text
 }
 
 function updateKnowledgeList(data) {
@@ -82,6 +131,7 @@ function updateKnowledgeList(data) {
 
     table_text = ""
 
+    t_count = 0
     for(var speakerid=0; speakerid<6; speakerid++){
         curr_speaker = speaker_list[speakerid];
         for(var i=0; i<data.length; i++) {
@@ -90,12 +140,33 @@ function updateKnowledgeList(data) {
             if (speaker != curr_speaker) {
                 continue
             }
+
+            if (item['triple']['rel'].length < 2) {
+                continue
+            }
+            if (item['triple']['sbj'].indexOf("do n't , to hell") !== -1) {
+                continue
+            }
+
             sentid = curr_scene_id + '-' + item['sid']
+            intention = item['intention']
+
             table_text += '<tr>'
             table_text += '<th class="custom-th">' + speaker + '</th>'
             table_text += '<th class="custom-th">' + sentid + '</th>'
-            table_text += '<th class="custom-th">' + "tt" + '</th>'
-            table_text += '<th class="custom-th">' + "tt" + '</th>'
+            table_text += '<th class="custom-th" style="font-size:1.0rem">'
+            for (var j=0; j<intention.length; j++) {
+                table_text += intention[j]
+                if (j != intention.length-1) {
+                    table_text += ', '
+                }
+            }
+            table_text += '</th>'
+            table_text += '<th class="custom-th">'
+
+            t_count += 1
+            table_text += getTripleHTML(item['triple'], item['ext_links'], t_count.toString())
+            table_text += '</th>'
             table_text += '</tr>'
         }
     }
